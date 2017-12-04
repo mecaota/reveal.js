@@ -4,6 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
+
 		<title>自己紹介LT</title>
 
         <script src="js/makedom.js"></script>
@@ -64,49 +65,20 @@
 			// - https://github.com/hakimel/reveal.js#configuration
 			// - https://github.com/hakimel/reveal.js#dependencies
             ///URL parameter取得して配列へin
-            var arg = getURLparam(location.search.substring(1).split('&'));
-            ///プロフィールAPI(自作GASアプリ)より取得
-            var url = "https://script.google.com/macros/s/AKfycbyulXVm6rcR8YOHtDJ-E4v22fkzMGeSKbUU7UCbwn-rttQwVn89/exec";
-            var param = {};
-            param["mode"]=arg["mode"];
-            param = JSON.stringify(param);
-            console.log("0");
-            fetch(url,{
-                method: 'POST',
-                mode: 'cors',
-                body: param
-            }).then(function(response) {
-                return response.text();
-            }).then(function(json) {
-                var json = JSON.parse(json||"null");
-                console.log(json);
-                return json;
-            }).then(json => createDom(json)
-            ).then(function(json){
-                console.log("open the price:"+json["slideurl"]);
-                fetch(json["slideurl"]).then(function(response) {
-                    return response.text();
-                }).then(function(slidebody){
-                    console.log(slidebody);
-                    document.getElementById("slideurl").insertAdjacentHTML("beforeend", ""+ slidebody +"");
-                    return true;
-                }).then(function(ok){
-                    console.log(ok);
-                    if(ok){
-                        console.log("reveal initializing///");
-                        Reveal.initialize(
-                            {
-                                dependencies: [
-                                    { src: 'plugin/markdown/marked.js' },
-                                    { src: 'plugin/markdown/markdown.js' },
-                                    { src: 'plugin/notes/notes.js', async: true },
-                                    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
-                                ]
-                            }
-                        );
+            getInfo(function(){
+                console.log("reveal initializing///");
+                Reveal.initialize(
+                    {
+                        dependencies: [
+                            { src: 'plugin/markdown/marked.js' },
+                            { src: 'plugin/markdown/markdown.js' },
+                            { src: 'plugin/notes/notes.js', async: true },
+                            { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+                        ]
                     }
-                });
-            });
+                );
+                return "reveal.js Initializing finished";
+            })
         </script>
 	</body>
 </html>

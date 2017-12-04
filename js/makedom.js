@@ -8,6 +8,38 @@ function getURLparam(pair){
     return arg;
 }
 
+function getInfo(callback){
+    var arg = getURLparam(location.search.substring(1).split('&'));
+    ///プロフィールAPI(自作GASアプリ)より取得
+    var url = "https://script.google.com/macros/s/AKfycbyulXVm6rcR8YOHtDJ-E4v22fkzMGeSKbUU7UCbwn-rttQwVn89/exec";
+    var param = {};
+    param["mode"]=arg["mode"];
+    param = JSON.stringify(param);
+    console.log("0");
+    return fetch(url,{
+        method: 'POST',
+        mode: 'cors',
+        body: param
+    }).then(function(response) {
+        return response.text();
+    }).then(function(json) {
+        var json = JSON.parse(json||"null");
+        console.log(json);
+        return json;
+    }).then(json => createDom(json)
+    ).then(function(json){
+        console.log("open the price:"+json["slideurl"]);
+        fetch(json["slideurl"]).then(function(response) {
+            return response.text();
+        }).then(function(slidebody){
+            console.log(slidebody);
+            document.getElementById("slideurl").insertAdjacentHTML("beforeend", ""+ slidebody +"");
+            return true;
+        }).then(callback);
+    });
+    return true;
+}
+
 function selectDom(key, value){
     ///各メタデータ配置箇所のclass要素をget
     var domList = document.getElementsByClassName(key);
