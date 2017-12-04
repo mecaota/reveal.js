@@ -6,7 +6,7 @@
 
 		<title>自己紹介LT</title>
 
-        <script src="js/makedom.js" async defer></script>
+        <script src="js/makedom.js"></script>
 		<link rel="stylesheet" href="css/reveal.css">
 		<link rel="stylesheet" href="css/theme/black.css">
 
@@ -44,8 +44,8 @@
 
 
                 </section>
-				<section data-markdown="src/slide.md" data-separator="---$" data-separator-vertical=">>>$">
-                    <script type="text/template"></script>
+				<section data-markdown data-separator="---$" data-separator-vertical=">>>$">
+                    <script id = "slideurl" type="text/template"></script>
                 </section>
                 
                 <section>
@@ -63,14 +63,50 @@
 			// More info about config & dependencies:
 			// - https://github.com/hakimel/reveal.js#configuration
 			// - https://github.com/hakimel/reveal.js#dependencies
-			Reveal.initialize({
-				dependencies: [
-					{ src: 'plugin/markdown/marked.js' },
-					{ src: 'plugin/markdown/markdown.js' },
-					{ src: 'plugin/notes/notes.js', async: true },
-					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
-				]
-			});
-		</script>
+            ///URL parameter取得して配列へin
+            var arg = getURLparam(location.search.substring(1).split('&'));
+            ///プロフィールAPI(自作GASアプリ)より取得
+            var url = "https://script.google.com/macros/s/AKfycbyulXVm6rcR8YOHtDJ-E4v22fkzMGeSKbUU7UCbwn-rttQwVn89/exec";
+            var param = {};
+            param["mode"]=arg["mode"];
+            param = JSON.stringify(param);
+            console.log("0");
+            fetch(url,{
+                method: 'POST',
+                mode: 'cors',
+                body: param
+            }).then(function(response) {
+                return response.text();
+            }).then(function(json) {
+                var json = JSON.parse(json||"null");
+                console.log(json);
+                return json;
+            }).then(json => createDom(json)
+            ).then(function(json){
+                console.log("open the price:"+json["slideurl"]);
+                fetch(json["slideurl"]).then(function(response) {
+                    return response.text();
+                }).then(function(slidebody){
+                    console.log(slidebody);
+                    document.getElementById("slideurl").insertAdjacentHTML("beforeend", ""+ slidebody +"");
+                    return true;
+                }).then(function(ok){
+                    console.log(ok);
+                    if(ok){
+                        console.log("reveal initializing///");
+                        Reveal.initialize(
+                            {
+                                dependencies: [
+                                    { src: 'plugin/markdown/marked.js' },
+                                    { src: 'plugin/markdown/markdown.js' },
+                                    { src: 'plugin/notes/notes.js', async: true },
+                                    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+                                ]
+                            }
+                        );
+                    }
+                });
+            });
+        </script>
 	</body>
 </html>
