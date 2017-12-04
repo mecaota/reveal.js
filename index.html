@@ -45,7 +45,7 @@
 
                 </section>
 				<section data-markdown data-separator="---$" data-separator-vertical=">>>$">
-                    <script id = "slideurl" class="slideurl" type="text/template"># あいうえお</script>
+                    <script id = "slideurl" type="text/template"></script>
                 </section>
                 
                 <section>
@@ -66,11 +66,11 @@
             ///URL parameter取得して配列へin
             var arg = getURLparam(location.search.substring(1).split('&'));
             ///プロフィールAPI(自作GASアプリ)より取得
-            var meta_json;
             var url = "https://script.google.com/macros/s/AKfycbyulXVm6rcR8YOHtDJ-E4v22fkzMGeSKbUU7UCbwn-rttQwVn89/exec";
             var param = {};
             param["mode"]=arg["mode"];
             param = JSON.stringify(param);
+            console.log("0");
             fetch(url,{
                 method: 'POST',
                 mode: 'cors',
@@ -80,25 +80,32 @@
             }).then(function(json) {
                 var json = JSON.parse(json||"null");
                 console.log(json);
-                meta_json = json;
                 return json;
             }).then(json => createDom(json)
-            ).then(fetch(meta_json["slideurl"])).then(function(response) {
-                document.getElementById("slideurl").insertAdjacentHTML("beforeend", ""+ response.text() +"");
-                return true;
-            }).then(function(ok){
-                console.log("reveal initializing///");
-                Reveal.initialize(
-                    {
-                        dependencies: [
-                            { src: 'plugin/markdown/marked.js' },
-                            { src: 'plugin/markdown/markdown.js' },
-                            { src: 'plugin/notes/notes.js', async: true },
-                            { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
-                        ]
+            ).then(function(json){
+                console.log("open the price:"+json["slideurl"]);
+                fetch(json["slideurl"]).then(function(response) {
+                    return response.text();
+                }).then(function(slidebody){
+                    console.log(slidebody);
+                    document.getElementById("slideurl").insertAdjacentHTML("beforeend", ""+ slidebody +"");
+                    return true;
+                }).then(function(ok){
+                    console.log(ok);
+                    if(ok){
+                        console.log("reveal initializing///");
+                        Reveal.initialize(
+                            {
+                                dependencies: [
+                                    { src: 'plugin/markdown/marked.js' },
+                                    { src: 'plugin/markdown/markdown.js' },
+                                    { src: 'plugin/notes/notes.js', async: true },
+                                    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+                                ]
+                            }
+                        );
                     }
-                );
-                return true;
+                });
             });
         </script>
 	</body>
