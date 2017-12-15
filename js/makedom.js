@@ -4,18 +4,16 @@ function getURLparam(pair){
         var kv = pair[i].split('=');
         arg[kv[0]] = kv[1];
     }
-    console.log(arg);
     return arg;
 }
 
 function getInfo(callback){
     var arg = getURLparam(location.search.substring(1).split('&'));
     ///プロフィールAPI(自作GASアプリ)より取得
-    var url = "https://script.google.com/macros/s/AKfycbyulXVm6rcR8YOHtDJ-E4v22fkzMGeSKbUU7UCbwn-rttQwVn89/exec";
+    var url = "https://script.google.com/macros/s/AKfycbw8N3XY7HGnrr4uB2nyDCy4gmrxFBM2SjvE19d_R6w4_VeCIEw/exec";
     var param = {};
     param["mode"]=arg["mode"];
     param = JSON.stringify(param);
-    console.log("0");
     return fetch(url,{
         method: 'POST',
         mode: 'cors',
@@ -24,15 +22,12 @@ function getInfo(callback){
         return response.text();
     }).then(function(json) {
         var json = JSON.parse(json||"null");
-        console.log(json);
         return json;
     }).then(json => createDom(json)
     ).then(function(json){
-        console.log("open the price:"+json["slideurl"]);
         fetch(json["slideurl"]).then(function(response) {
             return response.text();
         }).then(function(slidebody){
-            console.log(slidebody);
             document.getElementById("slideurl").insertAdjacentHTML("beforeend", ""+ slidebody +"");
             return true;
         }).then(callback);
@@ -52,7 +47,7 @@ function selectDom(key, value){
         }else{
             domList.item(i).insertAdjacentHTML("beforeend", ""+ value +"");
         }
-    })).then(console.log(key+"selectDom finish"));
+    })));
 }
 
 function createDom(meta_json){
