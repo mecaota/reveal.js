@@ -47,7 +47,7 @@ function selectDom(key, value){
         }else{
             domList.item(i).insertAdjacentHTML("beforeend", ""+ value +"");
         }
-    })));
+    }));
 }
 
 function createDom(meta_json){
